@@ -29,19 +29,20 @@ const SubstitutionCipher = () => {
   };
 
   const decodeFile = () => {
-    if (!encodedFile || !key) return;
+    if (!file || !key) return;
 
-    fetch(encodedFile)
-      .then((res) => res.text())
-      .then((text) => {
-        const decodedText = decode(text, key);
-        const blob = new Blob([decodedText], { type: "text/plain" });
-        setDecodedFile(URL.createObjectURL(blob));
-      });
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target.result;
+      const encodedText = decode(text, key);
+      const blob = new Blob([encodedText], { type: "text/plain" });
+      setDecodedFile(URL.createObjectURL(blob));
+    };
+    reader.readAsText(file);
   };
 
   const encode = (text, key) => {
-    // Define your substitution cipher here using the key
+    // encoding logic here
     let cipher = {};
     for (let i = 0; i < 26; i++) {
       cipher[String.fromCharCode(97 + i)] = String.fromCharCode(
@@ -56,7 +57,7 @@ const SubstitutionCipher = () => {
   };
 
   const decode = (text, key) => {
-    // Define your substitution cipher here using the key
+    // decoding logic here
     let cipher = {};
     for (let i = 0; i < 26; i++) {
       cipher[String.fromCharCode(97 + ((i + parseInt(key)) % 26))] =
@@ -70,31 +71,74 @@ const SubstitutionCipher = () => {
   };
 
   return (
-    <div>
-      <input
-        type="file"
-        className="file:border-solid "
-        onChange={handleFileChange}
-      />
-      <input
-        type="number"
-        className="number:border-solid border-black border-2 w-10"
-        onChange={handleKeyChange}
-      />
-      <button className="" onClick={encodeFile}>
-        Encode
-      </button>
-      <button onClick={decodeFile}>Decode</button>
-      {encodedFile && (
-        <a href={encodedFile} download="encoded.txt">
-          Download Encoded File
-        </a>
-      )}
-      {decodedFile && (
-        <a href={decodedFile} download="decoded.txt">
-          Download Decoded File
-        </a>
-      )}
+    <div className="bg-[#e0e0e0] h-[100vh] mx-auto flex justify-center items-center p-5">
+      <div
+        id="neo"
+        className="sm:max-w-[50%] max-h-[90%] w-full h-full flex flex- col rounded-[50px] bg-inherit p-4"
+      >
+        <div className="flex flex-col justify-center items-center w-full gap-5 relative">
+          <h1
+            className="text-3xl font-bold py-4 px-[32px] absolute top-2"
+            id="neo"
+          >
+            CryptoCoder
+          </h1>
+          <input
+            type="file"
+            id="file"
+            className="p-2 file:border-none file:bg-transparent file:border-black file:border-r-2 w-full max-w-[300px] file:cursor-pointer cursor-pointer"
+            onChange={handleFileChange}
+            placeholder="file"
+          />
+          <input
+            type="number"
+            id="key"
+            className="number:border-solid  w-20 p-2"
+            onChange={handleKeyChange}
+            placeholder="key"
+          />
+          <div className="flex flex-row gap-3">
+            <button
+              className="px-[35px] py-[10px]"
+              id="encode"
+              onClick={encodeFile}
+            >
+              Encode
+            </button>
+            <button
+              id="decode"
+              className="px-[35px] py-[10px]"
+              onClick={decodeFile}
+            >
+              Decode
+            </button>
+          </div>
+          <div className="flex flex-col md:flex-row gap-4 duration-500">
+            {encodedFile && (
+              <a
+                className="px-[35px] py-[10px]"
+                id="encoded-file"
+                href={encodedFile}
+                download="encoded.txt"
+                onClick={() => window.location.reload()}
+              >
+                Download Encoded File
+              </a>
+            )}
+            {decodedFile && (
+              <a
+                className="px-[35px] py-[10px]"
+                id="decoded-file"
+                href={decodedFile}
+                download="decoded.txt"
+                onClick={() => window.location.reload()}
+              >
+                Download Decoded File
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
